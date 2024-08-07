@@ -1,0 +1,13 @@
+# 代理地址，及其端口
+proxy:
+  host: '127.0.0.1'
+  port: '7890'
+
+# cookie字段，'PHPSESSID' 的值
+cookie: 'COOKIE'
+
+# 爬虫开始界面
+startPage: 'https://www.pixiv.net/ranking.php?mode=male'
+
+# 文件储存路径，以jar包位置为起始
+imgSavePath: '%HERE%/img'
