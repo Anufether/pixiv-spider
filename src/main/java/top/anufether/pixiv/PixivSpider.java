@@ -49,11 +49,10 @@ public class PixivSpider {
         // 设置代理
         String proxyHost = config.getString("proxy.host");
         String proxyPort = config.getString("proxy.port");
-        if (!proxyHost.isEmpty()) {
+        if (!proxyHost.isEmpty() && !proxyPort.isEmpty()) {
             System.setProperty("proxyHost", proxyHost);
-        }
-        if (!proxyPort.isEmpty()) {
             System.setProperty("proxyPort", proxyPort);
+            log.info("检测到代理服务器，运行环境已配置代理: {}:{}", proxyHost, proxyPort);
         }
 
         // 设置数据库
