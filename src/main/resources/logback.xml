@@ -3,7 +3,7 @@
     <property name="LOG_DIR" value="${app.home:-.}/logs" />
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/logfile.log</file>
+        <file>${LOG_DIR}/pixiv-spider.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 每天生成一个新的日志文件 -->
             <fileNamePattern>${LOG_DIR}/%d{yyyy-MM-dd}.log</fileNamePattern>
