@@ -28,7 +28,13 @@ jobs:
         uses: gradle/actions/setup-gradle@dbbdc275be76ac10734476cc723d82dfe7ec6eda # v3.4.2
 
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: ./gradlew build shadowJar
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: pixiv-spider-jar
+          path: build/libs/pixiv-spider-1.0-SNAPSHOT-all.jar
 
   dependency-submission:
     runs-on: ubuntu-latest
