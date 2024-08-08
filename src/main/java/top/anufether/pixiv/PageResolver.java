@@ -67,6 +67,8 @@ public class PageResolver {
      * @return 下一页的 URL，如果没有则返回 null
      */
     public String resolveListPage(String url) {
+        log.info("开始进行图片爬取🦎");
+        log.info("resolve list page url {}", url);
         String nextpageurl = null;
         try {
             Connection.Response res;
