@@ -7,13 +7,11 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * @Project: pixiv-reptile
+ * @Project: pixiv-spider
  * @Package: top.anufether.pixiv
  * @Author: anufether
  * @Create: 2024/8/7 16:46
@@ -43,8 +41,13 @@ public class Config {
      */
     private File file;
 
+    public Config(String path) {
+        this.path = path;
+    }
+
     /**
      * 加载指定路径的文件，并将内容解析为 Map。
+     *
      * @param path 文件路径
      * @throws RuntimeException 如果文件未找到或读取过程中发生错误
      */
@@ -96,6 +99,10 @@ public class Config {
         }
     }
 
+    public void Save() {
+        this.save();
+    }
+
     /**
      * 获取指定路径的值
      *
@@ -139,60 +146,9 @@ public class Config {
     }
 
     /**
-     * 获取指定路径的列表值
-     *
-     * @param path 路径，使用"."分隔的嵌套路径
-     * @return 指定路径的列表值
-     */
-    @SuppressWarnings("unchecked")
-    public List<String> getList(String path) {
-        return (List<String>) getValue(path);
-    }
-
-    /**
-     * 获取指定路径的所有子键
-     *
-     * @param path 路径，使用"."分隔的嵌套路径
-     * @return 指定路径的所有子键列表
-     */
-    @SuppressWarnings("unchecked")
-    public List<String> getKey(String path) {
-        Map<String, Object> map = (Map<String, Object>) getValue(path);
-        return map != null ? new ArrayList<>(map.keySet()) : new ArrayList<>();
-    }
-
-    /**
-     * 通过值查找键
-     *
-     * @param value 要查找的值
-     * @return 具有指定值的键列表
-     */
-    public List<String> getKeyOfValue(String value) {
-        List<String> keyList = new ArrayList<>();
-        for (String key : map.keySet()) {
-            String strValue = String.valueOf(map.get(key)); // 将类型(Integer)转化为String
-            if (strValue.equals(value)) {
-                keyList.add(key);
-            }
-        }
-        return keyList;
-    }
-
-    /**
-     * 获取指定路径的布尔值
-     *
-     * @param path 路径，使用"."分隔的嵌套路径
-     * @return 指定路径的布尔值
-     */
-    public boolean getBoolean(String path) {
-        Object value = getValue(path);
-        return value != null && (boolean) value;
-    }
-
-    /**
      * 设置指定路径的值
      *
-     * @param path 路径，使用"."分隔的嵌套路径
+     * @param path  路径，使用"."分隔的嵌套路径
      * @param value 要设置的值
      */
     @SuppressWarnings("unchecked")
@@ -213,4 +169,34 @@ public class Config {
         cache.put(keys[keys.length - 1], value);
     }
 
+    /**
+     * 保存默认配置文件
+     *
+     * @param path 配置文件的路径
+     */
+    public void saveDefaultConfig(String path) {
+        if (file == null) {
+            file = new File(getJarPath() + path);
+        }
+
+        // 从 jar 包中获取配置文件
+        try (InputStream in = Config.class.getClassLoader().getResourceAsStream(path);
+             FileOutputStream out = new FileOutputStream(file)) {
+
+            if (in == null) {
+                log.warn("配置文件路径无效，无法找到文件: {}", path);
+                return;
+            }
+
+            byte[] bytes = new byte[1024];
+            int count;
+            while ((count = in.read(bytes)) != -1) {
+                out.write(bytes, 0, count); // 将数据写入插件文件
+            }
+            log.warn("未找到配置文件，已自动为您生成，请将其配置好后重新运行此程序.");
+            System.exit(Constants.EXIT_ERROR);
+        } catch (IOException e) {
+            log.error("保存默认配置文件失败,{}", file.getAbsolutePath(), e);
+        }
+    }
 }

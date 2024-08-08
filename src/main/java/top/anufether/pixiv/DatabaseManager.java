@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.*;
 
 /**
- * @Project: pixiv-reptile
+ * @Project: pixiv-spider
  * @Package: top.anufether.pixiv
  * @Author: anufether
  * @Create: 2024/8/8 9:04
@@ -35,7 +35,7 @@ public class DatabaseManager {
      */
     public void load() {
         String driver = "org.sqlite.JDBC";
-        String url = "jdbc:sqlite:" + jarPath + "pixiv-reptile.db";
+        String url = "jdbc:sqlite:" + jarPath + "pixiv-spider.db";
         try {
             // 加载 SQLite 驱动
             Class.forName(driver);
@@ -45,7 +45,7 @@ public class DatabaseManager {
         } catch (ClassNotFoundException | SQLException e) {
             // 连接数据库失败时，记录错误信息并退出程序
             log.error("连接数据库时失败: {}", e.getMessage());
-            System.exit(1);
+            System.exit(Constants.EXIT_ERROR);
         }
 
         // 创建 crawled_artworks 表的 SQL 语句
@@ -62,7 +62,7 @@ public class DatabaseManager {
         } catch (SQLException e) {
             // 创建表失败时，记录错误信息并退出程序
             log.error("创建数据表时失败: {}", e.getMessage());
-            System.exit(1);
+            System.exit(Constants.EXIT_ERROR);
         }
     }
 

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * @Project: pixiv-reptile
+ * @Project: pixiv-spider
  * @Package: top.anufether.pixiv
  * @Author: anufether
  * @Create: 2024/8/7 17:14
