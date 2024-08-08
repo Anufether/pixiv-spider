@@ -4,9 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
-import java.util.Objects;
 
 /**
  * @Project: pixiv-spider
@@ -20,7 +21,7 @@ import java.util.Objects;
 @Slf4j
 public class PixivSpider {
     // jar 包路径
-    public static String jarPath = Objects.requireNonNull(PixivSpider.class.getClassLoader().getResource("")).getPath();
+    public static String jarPath = getJarPath();
 
     // 读取配置
     public static Config config = new Config("config.yaml");
@@ -75,6 +76,20 @@ public class PixivSpider {
                 log.error("处理列表页面时发生错误", e);
                 break; // 发生错误后退出循环
             }
+        }
+    }
+
+    public static String getJarPath() {
+        try {
+            // 获取 JAR 文件的 URL
+            URL url = PixivSpider.class.getProtectionDomain().getCodeSource().getLocation();
+            // 将 URL 转换为文件路径
+            File jarFile = new File(url.toURI());
+            // 返回 JAR 文件所在目录的绝对路径
+            return jarFile.getParent() + File.separator;
+        } catch (URISyntaxException e) {
+            log.error("获取 JAR 包路径失败, {}", e.getMessage());
+            return null;
         }
     }
 }

@@ -6,8 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -122,19 +120,38 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * 获取数据库文件的路径。如果在资源文件夹中找不到数据库文件，则在JAR包的同目录下创建一个新的数据库文件。
+     *
+     * @return 数据库文件的绝对路径，如果在JAR包目录中创建了新的文件，则返回该文件的路径。
+     */
     private String getDBPath() {
-        URL resourceUrl = DatabaseManager.class.getClassLoader().getResource("pixiv-spider.db");
-        if (resourceUrl == null) {
-            log.error("无法找到资源文件夹");
-            System.exit(Constants.EXIT_ERROR);
+        String dbPath = getJarPath() + "pixiv-spider.db";
+        // 获取资源路径
+        File cfgFile = new File(dbPath);
+
+        if (!cfgFile.exists()) {
+            log.error("无法找到资源文件夹,开始新建数据库文件");
+            // 获取JAR包路径
+            if (jarPath != null) {
+                Path dbFilePath = Paths.get(jarPath, "pixiv-spider.db");
+                if (!Files.exists(dbFilePath)) {
+                    try {
+                        // 如果数据库文件不存在，则在JAR包同目录下创建新的数据库文件
+                        Files.createFile(dbFilePath);
+                        log.info("在JAR包同目录下创建了新的数据库文件: {}", dbFilePath);
+                    } catch (IOException e) {
+                        log.error("创建数据库文件时出错: {}", e.getMessage());
+                        System.exit(Constants.EXIT_ERROR);
+                    }
+                }
+                return dbFilePath.toString();
+            } else {
+                log.error("无法确定JAR包路径");
+                System.exit(Constants.EXIT_ERROR);
+            }
         }
 
-        try {
-            return Paths.get(resourceUrl.toURI()).toString();
-        } catch (URISyntaxException e) {
-            log.error("获取资源文件夹路径时出错: {}", e.getMessage());
-            System.exit(Constants.EXIT_ERROR);
-        }
-        return null;
+        return dbPath;
     }
 }
