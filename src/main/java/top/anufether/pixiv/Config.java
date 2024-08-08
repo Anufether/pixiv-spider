@@ -7,7 +7,9 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,6 +94,123 @@ public class Config {
             log.error("写入文件时发生错误: {}", file.getAbsolutePath(), e);
             throw new RuntimeException("无法写入文件: " + file.getAbsolutePath(), e);
         }
+    }
+
+    /**
+     * 获取指定路径的值
+     *
+     * @param path 路径，使用"."分隔的嵌套路径
+     * @return 指定路径的值
+     */
+    @SuppressWarnings("unchecked")
+    public Object getValue(String path) {
+        if (path.equals(".")) { // 表示根路径
+            return this.map;
+        }
+
+        if (!path.contains(".")) { // 只有一个key, 直接从map获取值
+            return this.map.get(path);
+        }
+
+        // 分割路径, "."是转义字符必须加\\
+        String[] keys = path.split("\\.");
+        Map<String, Object> map = this.map;
+
+        // 循环从第一个key开始, 至倒数第二个key为止
+        for (int i = 0; i < keys.length - 1; i++) {
+            map = (Map<String, Object>) map.get(keys[i]);
+            if (map == null) {
+                return null; // 如果中途找不到对应的key，返回null
+            }
+        }
+
+        return map.get(keys[keys.length - 1]); // 直接取最后一个key的值作为value
+    }
+
+    /**
+     * 获取指定路径的字符串值
+     *
+     * @param path 路径，使用"."分隔的嵌套路径
+     * @return 指定路径的字符串值
+     */
+    public String getString(String path) {
+        Object value = getValue(path);
+        return value != null ? value.toString() : null;
+    }
+
+    /**
+     * 获取指定路径的列表值
+     *
+     * @param path 路径，使用"."分隔的嵌套路径
+     * @return 指定路径的列表值
+     */
+    @SuppressWarnings("unchecked")
+    public List<String> getList(String path) {
+        return (List<String>) getValue(path);
+    }
+
+    /**
+     * 获取指定路径的所有子键
+     *
+     * @param path 路径，使用"."分隔的嵌套路径
+     * @return 指定路径的所有子键列表
+     */
+    @SuppressWarnings("unchecked")
+    public List<String> getKey(String path) {
+        Map<String, Object> map = (Map<String, Object>) getValue(path);
+        return map != null ? new ArrayList<>(map.keySet()) : new ArrayList<>();
+    }
+
+    /**
+     * 通过值查找键
+     *
+     * @param value 要查找的值
+     * @return 具有指定值的键列表
+     */
+    public List<String> getKeyOfValue(String value) {
+        List<String> keyList = new ArrayList<>();
+        for (String key : map.keySet()) {
+            String strValue = String.valueOf(map.get(key)); // 将类型(Integer)转化为String
+            if (strValue.equals(value)) {
+                keyList.add(key);
+            }
+        }
+        return keyList;
+    }
+
+    /**
+     * 获取指定路径的布尔值
+     *
+     * @param path 路径，使用"."分隔的嵌套路径
+     * @return 指定路径的布尔值
+     */
+    public boolean getBoolean(String path) {
+        Object value = getValue(path);
+        return value != null && (boolean) value;
+    }
+
+    /**
+     * 设置指定路径的值
+     *
+     * @param path 路径，使用"."分隔的嵌套路径
+     * @param value 要设置的值
+     */
+    @SuppressWarnings("unchecked")
+    public void setValue(String path, Object value) {
+        if (path.equals(".")) { // 表示根路径
+            this.map = (Map<String, Object>) value;
+            return;
+        }
+
+        // 分割路径, "."是转义字符必须加\\
+        String[] keys = path.split("\\.");
+        Map<String, Object> cache = this.map;
+
+        for (int i = 0; i < keys.length - 1; i++) {
+            cache = (Map<String, Object>) cache.get(keys[i]);
+        }
+
+        cache.put(keys[keys.length - 1], value);
     }
 
 }
