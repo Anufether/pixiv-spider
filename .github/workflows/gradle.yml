@@ -3,6 +3,7 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "master" ]
+    tags: [ "v*.*.*" ]  # 匹配所有符合 vX.X.X 形式的标签
   pull_request:
     branches: [ "master" ]
 
@@ -23,7 +24,6 @@ jobs:
       - name: Grant execute permissions for Gradle wrapper
         run: chmod +x ./gradlew
 
-      # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@dbbdc275be76ac10734476cc723d82dfe7ec6eda # v3.4.2
 
@@ -51,3 +51,25 @@ jobs:
 
       - name: Generate and submit dependency graph
         uses: gradle/actions/dependency-submission@dbbdc275be76ac10734476cc723d82dfe7ec6eda # v3.4.2
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: pixiv-spider-jar
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref }}
+          name: Release ${{ github.ref }}
+          body: |
+            This release includes the latest JAR build.
+          draft: false
+          prerelease: false
+          artifacts: pixiv-spider-jar
