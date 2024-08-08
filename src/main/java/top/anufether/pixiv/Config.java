@@ -175,28 +175,29 @@ public class Config {
      * @param path 配置文件的路径
      */
     public void saveDefaultConfig(String path) {
-        if (file == null) {
-            file = new File(getJarPath() + path);
-        }
+        File cfgFile = new File(getJarPath() + path);
+        if (cfgFile.exists()) {
+            log.info("文件已存在: {}", getJarPath() + path);
+        } else {
+            // 从 jar 包中获取配置文件
+            try (InputStream in = Config.class.getClassLoader().getResourceAsStream("config.yaml");
+                 FileOutputStream out = new FileOutputStream(cfgFile)) {
 
-        // 从 jar 包中获取配置文件
-        try (InputStream in = Config.class.getClassLoader().getResourceAsStream(path);
-             FileOutputStream out = new FileOutputStream(file)) {
+                if (in == null) {
+                    log.warn("配置文件路径无效，无法找到文件: {}", path);
+                    return;
+                }
 
-            if (in == null) {
-                log.warn("配置文件路径无效，无法找到文件: {}", path);
-                return;
+                byte[] bytes = new byte[1024];
+                int count;
+                while ((count = in.read(bytes)) != -1) {
+                    out.write(bytes, 0, count); // 将数据写入插件文件
+                }
+                log.warn("未找到配置文件，已自动为您生成，请将其配置好后重新运行此程序.");
+                System.exit(Constants.EXIT_ERROR);
+            } catch (IOException e) {
+                log.error("保存默认配置文件失败,{}", file.getAbsolutePath(), e);
             }
-
-            byte[] bytes = new byte[1024];
-            int count;
-            while ((count = in.read(bytes)) != -1) {
-                out.write(bytes, 0, count); // 将数据写入插件文件
-            }
-            log.warn("未找到配置文件，已自动为您生成，请将其配置好后重新运行此程序.");
-            System.exit(Constants.EXIT_ERROR);
-        } catch (IOException e) {
-            log.error("保存默认配置文件失败,{}", file.getAbsolutePath(), e);
         }
     }
 }

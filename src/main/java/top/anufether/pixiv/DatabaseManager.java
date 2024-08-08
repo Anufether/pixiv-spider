@@ -4,6 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 
 /**
@@ -35,7 +42,8 @@ public class DatabaseManager {
      */
     public void load() {
         String driver = "org.sqlite.JDBC";
-        String url = "jdbc:sqlite:" + jarPath + "pixiv-spider.db";
+        String dbPath = getDBPath();
+        String url = "jdbc:sqlite:" + dbPath;
         try {
             // 加载 SQLite 驱动
             Class.forName(driver);
@@ -112,5 +120,21 @@ public class DatabaseManager {
             // 插入失败时，记录错误信息
             log.error("添加作品时失败: {}", e.getMessage());
         }
+    }
+
+    private String getDBPath() {
+        URL resourceUrl = DatabaseManager.class.getClassLoader().getResource("pixiv-spider.db");
+        if (resourceUrl == null) {
+            log.error("无法找到资源文件夹");
+            System.exit(Constants.EXIT_ERROR);
+        }
+
+        try {
+            return Paths.get(resourceUrl.toURI()).toString();
+        } catch (URISyntaxException e) {
+            log.error("获取资源文件夹路径时出错: {}", e.getMessage());
+            System.exit(Constants.EXIT_ERROR);
+        }
+        return null;
     }
 }

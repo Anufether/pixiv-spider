@@ -23,26 +23,27 @@ public class PixivSpider {
     public static String jarPath = Objects.requireNonNull(PixivSpider.class.getClassLoader().getResource("")).getPath();
 
     // 读取配置
-    public static Config config = new Config("config.yml");
+    public static Config config = new Config("config.yaml");
 
     // 数据库链接
     public static DatabaseManager databaseManager = new DatabaseManager();
 
     public static void main(String[] args) {
+        log.info("Starting Pixiv Spider...");
 
         // 设置配置文件路径
         config.setJarPath(jarPath);
-        config.saveDefaultConfig("config.yml");
+        config.saveDefaultConfig("config.yaml");
 
-        // 尝试上锁配置文件
-        File cfgFile = new File(jarPath + "config.yml");
+        // 尝试上锁默认配置文件
+        File cfgFile = new File(jarPath + "config.yaml");
         try (FileChannel ignored = FileChannel.open(cfgFile.toPath(), StandardOpenOption.READ)) {
             log.info("配置文件成功上锁.");
         } catch (IOException e) {
             log.warn("上锁配置文件失败, 请在接下来的过程中勿编辑配置文件.", e);
         }
 
-        config.load("config.yml");
+        config.load("config.yaml");
 
         // 设置代理
         String proxyHost = config.getString("proxy.host");
@@ -65,7 +66,7 @@ public class PixivSpider {
         crawler.addCookie("PHPSESSID", cookie);
 
         // 开始爬取
-        String url = config.getString("startpage");
+        String url = config.getString("startPage");
         while (true) {
             try {
                 url = crawler.resolveListPage(url);

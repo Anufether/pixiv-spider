@@ -167,7 +167,7 @@ public class PageResolver {
                 String imgUrl = (i == 0) ? p0Url : p0Url.replaceAll("p0", "p" + i);
                 String filename = imgUrl.substring(imgUrl.lastIndexOf("/") + 1);
                 // 这里要去掉 jarPath 末尾的 "/"
-                String imageSavePath = config.getString("imagesavepath").replace("%HERE%",
+                String imageSavePath = config.getString("imgSavePath").replace("%HERE%",
                         jarPath.substring(0, jarPath.length() - 1));
                 File imgFile = FileUtils.createFile(imageSavePath, filename);
 

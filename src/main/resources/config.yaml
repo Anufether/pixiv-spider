@@ -4,7 +4,7 @@ proxy:
   port: '7890'
 
 # cookie字段，'PHPSESSID' 的值
-cookie: 'COOKIE'
+cookie: '108661283_PuGpDkjGM0kASj70DaSPqH9SkOFK0SYE'
 
 # 爬虫开始界面
 startPage: 'https://www.pixiv.net/ranking.php?mode=male'
