@@ -190,8 +190,8 @@ public class Config {
 
                 byte[] bytes = new byte[1024];
                 int count;
-                while ((count = in.read(bytes)) != -1) {
-                    out.write(bytes, 0, count); // 将数据写入插件文件
+                while ((count = in.read(bytes)) != Constants.END_OF_STREAM) {
+                    out.write(bytes, Constants.BUFFER_START_INDEX, count); // 将数据写入插件文件
                 }
                 log.warn("未找到配置文件，已自动为您生成，请将其配置好后重新运行此程序.");
                 System.exit(Constants.EXIT_ERROR);

@@ -117,7 +117,7 @@ public class PageResolver {
                 resolveImagePage(imagePageUrl, dataId);
             }
 
-            config.setValue("startpage", url);
+            config.setValue("startPage", url);
             config.Save();
         } catch (IOException e) {
             log.error("处理页面时发生错误", e);
@@ -180,15 +180,20 @@ public class PageResolver {
                 try {
                     while (true) {
                         try {
-                            resImg = Jsoup.connect(imgUrl).cookies(cookies).ignoreContentType(true)
-                                    .maxBodySize((int) Constants.GIGABYTE).referrer("https://www.pixiv.net/artworks/" + dataId).execute();
+                            resImg = Jsoup
+                                    .connect(imgUrl)
+                                    .cookies(cookies)
+                                    .ignoreContentType(true)
+                                    .maxBodySize((int) Constants.GIGABYTE)
+                                    .referrer("https://www.pixiv.net/artworks/" + dataId)
+                                    .execute();
                             in = new BufferedInputStream(resImg.bodyStream());
                             out = new BufferedOutputStream(new FileOutputStream(imgFile));
                             byte[] bytes = new byte[1024];
                             int total = 0;
                             int count;
-                            while ((count = in.read(bytes)) != -1) {
-                                out.write(bytes, 0, count);
+                            while ((count = in.read(bytes)) != Constants.END_OF_STREAM) {
+                                out.write(bytes, Constants.BUFFER_START_INDEX, count);
                                 total += count;
                             }
                             log.info("文件 {} 保存完成, 共收到 {} 字节.", filename, total);

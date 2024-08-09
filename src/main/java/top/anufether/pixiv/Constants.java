@@ -12,6 +12,9 @@ package top.anufether.pixiv;
 public interface Constants {
     int EXIT_ERROR = 1; // 错误退出
 
+    int END_OF_STREAM = -1; // 流结束标志
+    int BUFFER_START_INDEX = 0; // 数据写入操作的起始偏移量
+
     // 文件大小常量
     long KILOBYTE = 1024L; // 一千字节
     long MEGABYTE = 1024L * KILOBYTE; // 一兆字节
