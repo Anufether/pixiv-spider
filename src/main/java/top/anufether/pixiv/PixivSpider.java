@@ -1,6 +1,9 @@
 package top.anufether.pixiv;
 
 import lombok.extern.slf4j.Slf4j;
+import top.anufether.pixiv.config.YamlConfig;
+import top.anufether.pixiv.dao.DatabaseManager;
+import top.anufether.pixiv.spider.PageResolver;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +27,7 @@ public class PixivSpider {
     public static String jarPath = getJarPath();
 
     // 读取配置
-    public static Config config = new Config("config.yaml");
+    public static YamlConfig yamlConfig = new YamlConfig("config.yaml");
 
     // 数据库链接
     public static DatabaseManager databaseManager = new DatabaseManager();
@@ -33,8 +36,8 @@ public class PixivSpider {
         log.info("Starting Pixiv Spider...");
 
         // 设置配置文件路径
-        config.setJarPath(jarPath);
-        config.saveDefaultConfig("config.yaml");
+        yamlConfig.setJarPath(jarPath);
+        yamlConfig.saveDefaultConfig("config.yaml");
 
         // 尝试上锁默认配置文件
         File cfgFile = new File(jarPath + "config.yaml");
@@ -44,11 +47,11 @@ public class PixivSpider {
             log.warn("上锁配置文件失败, 请在接下来的过程中勿编辑配置文件.", e);
         }
 
-        config.load("config.yaml");
+        yamlConfig.load("config.yaml");
 
         // 设置代理
-        String proxyHost = config.getString("proxy.host");
-        String proxyPort = config.getString("proxy.port");
+        String proxyHost = yamlConfig.getString("proxy.host");
+        String proxyPort = yamlConfig.getString("proxy.port");
         if (!proxyHost.isEmpty() && !proxyPort.isEmpty()) {
             System.setProperty("proxyHost", proxyHost);
             System.setProperty("proxyPort", proxyPort);
@@ -60,13 +63,13 @@ public class PixivSpider {
         databaseManager.load();
 
         // 设置爬虫
-        PageResolver crawler = new PageResolver(config, databaseManager);
+        PageResolver crawler = new PageResolver(yamlConfig, databaseManager);
         crawler.setJarPath(jarPath);
-        String cookie = config.getString("cookie");
+        String cookie = yamlConfig.getString("cookie");
         crawler.addCookie("PHPSESSID", cookie);
 
         // 开始爬取
-        String url = config.getString("startPage");
+        String url = yamlConfig.getString("startPage");
         while (true) {
             try {
                 url = crawler.resolveListPage(url);

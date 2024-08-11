@@ -1,8 +1,9 @@
-package top.anufether.pixiv;
+package top.anufether.pixiv.dao;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import top.anufether.pixiv.constant.Constants;
 
 import java.io.File;
 import java.io.IOException;

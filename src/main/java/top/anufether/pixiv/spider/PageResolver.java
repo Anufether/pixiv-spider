@@ -1,4 +1,4 @@
-package top.anufether.pixiv;
+package top.anufether.pixiv.spider;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
@@ -11,6 +11,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import top.anufether.pixiv.config.YamlConfig;
+import top.anufether.pixiv.constant.Constants;
+import top.anufether.pixiv.dao.DatabaseManager;
+import top.anufether.pixiv.util.FileUtils;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
@@ -39,7 +43,7 @@ public class PageResolver {
     /**
      * 配置文件对象
      */
-    private Config config;
+    private YamlConfig yamlConfig;
 
     /**
      * jar 包路径
@@ -51,8 +55,8 @@ public class PageResolver {
      */
     private DatabaseManager databaseManager;
 
-    public PageResolver(Config config, DatabaseManager databaseManager) {
-        this.config = config;
+    public PageResolver(YamlConfig yamlConfig, DatabaseManager databaseManager) {
+        this.yamlConfig = yamlConfig;
         this.databaseManager = databaseManager;
     }
 
@@ -117,8 +121,8 @@ public class PageResolver {
                 resolveImagePage(imagePageUrl, dataId);
             }
 
-            config.setValue("startPage", url);
-            config.Save();
+            yamlConfig.setValue("startPage", url);
+            yamlConfig.Save();
         } catch (IOException e) {
             log.error("处理页面时发生错误", e);
             return nextpageurl;
@@ -169,7 +173,7 @@ public class PageResolver {
                 String imgUrl = (i == 0) ? p0Url : p0Url.replaceAll("p0", "p" + i);
                 String filename = imgUrl.substring(imgUrl.lastIndexOf("/") + 1);
                 // 这里要去掉 jarPath 末尾的 "/"
-                String imageSavePath = config.getString("imgSavePath").replace("%HERE%",
+                String imageSavePath = yamlConfig.getString("imgSavePath").replace("%HERE%",
                         jarPath.substring(0, jarPath.length() - 1));
                 File imgFile = FileUtils.createFile(imageSavePath, filename);
 

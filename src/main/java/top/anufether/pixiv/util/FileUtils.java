@@ -1,4 +1,4 @@
-package top.anufether.pixiv;
+package top.anufether.pixiv.util;
 
 import java.io.File;
 import java.io.IOException;

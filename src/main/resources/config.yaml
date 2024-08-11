@@ -18,3 +18,11 @@ startPage: 'https://www.pixiv.net/ranking.php?mode=male'
 
 # 文件储存路径，以jar包位置为起始
 imgSavePath: '%HERE%/img'
+
+# 文件传输（ssh）
+ssh:
+  remoteDir: '/remote/directory/'
+  userName: 'root'
+  remoteHost: 'test.com'
+  remotePort: '22'
+  password: '123wqeasd'

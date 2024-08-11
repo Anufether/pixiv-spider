@@ -1,10 +1,12 @@
-package top.anufether.pixiv;
+package top.anufether.pixiv.config;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import top.anufether.pixiv.constant.Constants;
+import top.anufether.pixiv.util.FileUtils;
 
 import java.io.*;
 import java.util.LinkedHashMap;
@@ -22,12 +24,12 @@ import java.util.Map;
 @Getter
 @Setter
 @Slf4j
-public class Config {
+public class YamlConfig {
 
     public Map<String, Object> map = new LinkedHashMap<>();
 
     /**
-     * config.yaml 文件路径
+     * yamlConfig.yaml 文件路径
      */
     private String path;
 
@@ -41,7 +43,7 @@ public class Config {
      */
     private File file;
 
-    public Config(String path) {
+    public YamlConfig(String path) {
         this.path = path;
     }
 
@@ -180,7 +182,7 @@ public class Config {
             log.info("文件已存在: {}", getJarPath() + path);
         } else {
             // 从 jar 包中获取配置文件
-            try (InputStream in = Config.class.getClassLoader().getResourceAsStream("config.yaml");
+            try (InputStream in = YamlConfig.class.getClassLoader().getResourceAsStream("config.yaml");
                  FileOutputStream out = new FileOutputStream(cfgFile)) {
 
                 if (in == null) {

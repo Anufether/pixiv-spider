@@ -1,4 +1,4 @@
-package top.anufether.pixiv;
+package top.anufether.pixiv.constant;
 
 /**
  * @Project: pixiv-spider
@@ -14,6 +14,8 @@ public interface Constants {
 
     int END_OF_STREAM = -1; // 流结束标志
     int BUFFER_START_INDEX = 0; // 数据写入操作的起始偏移量
+
+    int ZIP_MAX_NUM = 100; // 单次打包最大文件数量
 
     // 文件大小常量
     long KILOBYTE = 1024L; // 一千字节
